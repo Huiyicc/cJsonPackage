@@ -1,10 +1,19 @@
 #ifndef cJSONHelp__h
 #define cJSONHelp__h
+#include <string>
+#include <vector>
 
 extern "C"
 {
 #include "cJSON.h"
 }
+
+typedef struct _JSONTYPESTUCT
+{
+	int Type;
+	char* name;
+
+}JSONTYPESTUCT, * PHJSONTYPESTUCT;
 
 class cJSONH {
 private:
@@ -13,7 +22,8 @@ private:
 	const char* LastError="";	///< 最后错误的文本
 
 	cJSON* PathParsed(cJSON* root, const char* path);
-	cJSON* SelectNoCreate(cJSON* root, const char* path);
+	std::vector<JSONTYPESTUCT> PathParsedOrCreate(const char* path);
+	bool SetValueOfJsonArr(cJSON* root, std::vector<JSONTYPESTUCT> jsonarr, int type, void* dataaddress);
 
 public:
 
@@ -119,7 +129,7 @@ public:
 
 	/**
 	* @简述: 获取键值的类型
-	* @参数: Path [in]		键值所在路径 例如:root.arr[0].key
+	* @参数: Path [in]		属性路径 例如:root.arr[0].key
 	*
 	* @返回 类型常量,对应 cJSON_
 	*/
@@ -127,7 +137,7 @@ public:
 
 	/**
 	* @简述: 获取父级对象指针
-	* @参数: Path [in]		键值所在路径 例如:root.arr[0].key
+	* @参数: Path [in]		属性在路径 例如:root.arr[0].key
 	*
 	* @返回 父级对象的指针
 	*/
@@ -135,22 +145,103 @@ public:
 
 	/**
 	* @简述: 获取数组成员数量
-	* @参数: Path [in]		键值所在路径 例如:root.arr[0].key
+	* @参数: Path [in]		属性路径 例如:root.arr[0].key
 	*
 	* @返回 父级对象的指针
 	*/
 	int GetArraySize(const char* path);
 
 	/**
-	* @简述: 获取对应键值的String值
-	*			注意:如果对应键值的值类型不为String可能会出现错误
-	* @参数: Path [in]		键值所在路径 例如:root.arr[0].key
+	* @简述: 删除属性
+	* @参数: Path [in]		属性所在父路径 例如:root.arr[0]
+	* @参数: ItemName [in]	属性名
+	* @参数: Case [in]		属性名是否大小写敏感
+	*
+	* @返回 分离的节点指针
+	*/
+	cJSON* DetachItem(const char* path, const char* ItemName, bool Case);
+
+	/**
+	* @简述: 删除属性
+	* @参数: Path [in]		属性路径 例如:root.arr[0].key
+	* @参数: Item [in]		属性名
+	*/
+	void DeleteItem(const char* path, const char* Item);
+
+	/**
+	* @简述: 删除成员
+	* @参数: Path [in]		属性路径 例如:root.arr[0].key
+	* @参数: which [in]		成员下标
+	*/
+	void DeleteItemFromArray(const char* path, int which);
+
+	/**
+	* @简述: 清空值，包括所有下级属性和成员
+	* @参数: Path [in]		父属性路径 例如:root.arr[0]
+	*/
+	void Clear(const char* path);
+
+	/**
+	* @简述: 取对象属性
+	* @参数: Path [in]		属性路径 例如:root.arr[0].key
+	*
+	* @返回 指向对应属性的指针
+	*/
+	cJSON* GetAttributes(const char* path);
+
+	/**
+	* @简述: 取自身属性名
+	* @参数: Path [in]		属性路径 例如:root.arr[0].key
+	*
+	* @返回 属性名字符串
+	*/
+	const char* GetItemName(const char* path);
+
+	/**
+	* @简述: 添加数组成员
+	* @参数: Path [in]		属性路径 例如:root.arr[0].key
+	* @参数: item [in]		数组成员指针
+	* 
+	* @返回 bool
+	*/
+	cJSON_bool AddItemToArray(const char* path, cJSON* item);
+
+	/**
+	* @简述: 设置对象属性
+	* @参数: Path [in]		属性路径 例如:root.arr[0].key
+	* @参数: Value [in]		属性指针
+	*
+	* @返回 bool
+	*/
+	cJSON_bool SetObjectValue(const char* Path, cJSON* Value);
+
+
+
+	/**
+	* @简述: 获取对应属性的String值
+	* @参数: Path [in]		属性路径 例如:root.arr[0].key
 	*
 	* @返回 对应的字符串,失败返回空
 	*/
 	const char* GetStringValue(const char* Path);
 
+	/**
+	* @简述: 设置对应键值的文本值
+	* @参数: Path [in]		属性路径 例如:root.arr[0].key	不存在会自行创建
+	* @参数: String [in]		需要设置的值
+	*
+	* @返回 bool
+	*/
+	cJSON_bool SetStringValue(const char* Path, const char* String);
 
+	/**
+	* @简述: 设置对应键值的数值
+	* @参数: Path [in]		属性路径 例如:root.arr[0].key	不存在会自行创建
+	* @参数: num [in]		需要设置的值
+	*
+	* @返回 bool
+	*/
+	cJSON_bool SetNumberValue(const char* Path, double num);
 };
 
 #endif

@@ -86,15 +86,18 @@ then using the CJSON_API_VISIBILITY flag to "export" the same symbols the way CJ
 #include <stddef.h>
 
 /* cJSON Types: */
-#define cJSON_Invalid (0)
-#define cJSON_False  (1 << 0)
-#define cJSON_True   (1 << 1)
-#define cJSON_NULL   (1 << 2)
-#define cJSON_Number (1 << 3)
-#define cJSON_String (1 << 4)
-#define cJSON_Array  (1 << 5)
-#define cJSON_Object (1 << 6)
-#define cJSON_Raw    (1 << 7) /* raw json */
+#define cJSON_Invalid (0)           //0
+#define cJSON_False  (1 << 0)       //1 
+#define cJSON_True   (1 << 1)       //2
+#define cJSON_NULL   (1 << 2)       //4
+#define cJSON_Number (1 << 3)       //8
+#define cJSON_String (1 << 4)       //16
+#define cJSON_Array  (1 << 5)       //32
+#define cJSON_Object (1 << 6)       //64
+#define cJSON_Raw    (1 << 7)       //128    /* raw json */
+
+
+
 
 #define cJSON_IsReference 256
 #define cJSON_StringIsConst 512
